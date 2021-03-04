@@ -107,14 +107,20 @@ class ltcl_stripper_scenarios definition final for testing
         remote type zif_abapgit_definitions=>ty_files_tt,
       end of ty_local_remote.
 
-    methods prepare_mock
-      exporting
-        es_input  type ty_local_remote
-        es_exp    type ty_local_remote.
 
   private section.
     methods no_change_if_no_config for testing raising zcx_abapgit_exception.
     methods happy_path for testing raising zcx_abapgit_exception.
+    methods happy_path_with_derect_config for testing raising zcx_abapgit_exception.
+
+    methods prepare_mock
+      exporting
+        es_input  type ty_local_remote
+        es_exp    type ty_local_remote.
+    methods assert_result
+      importing
+        is_input  type ty_local_remote
+        is_exp    type ty_local_remote.
 
 endclass.
 
@@ -264,6 +270,8 @@ class ltcl_stripper_scenarios implementation.
     ls_exp = ls_input.
 
     zcl_abapgit_xml_stripper=>process_files(
+      exporting
+        iv_config_filename = '.xmlstrip.config'
       changing
         ct_local  = ls_input-local
         ct_remote = ls_input-remote ).
@@ -278,7 +286,6 @@ class ltcl_stripper_scenarios implementation.
 
     data ls_exp   type ty_local_remote.
     data ls_input type ty_local_remote.
-    data lv_equal type abap_bool.
 
     prepare_mock(
       importing
@@ -286,14 +293,26 @@ class ltcl_stripper_scenarios implementation.
         es_exp   = ls_exp ).
 
     zcl_abapgit_xml_stripper=>process_files(
+      exporting
+        iv_config_filename = '.xmlstrip.config'
       changing
         ct_local  = ls_input-local
         ct_remote = ls_input-remote ).
 
-    field-symbols <la> like line of ls_input-local.
-    field-symbols <le> like line of ls_input-local.
-    loop at ls_input-local assigning <la>.
-      read table ls_exp-local with key file-filename = <la>-file-filename assigning <le>.
+    assert_result(
+      is_input = ls_input
+      is_exp   = ls_exp ).
+
+  endmethod.
+
+  method assert_result.
+
+    data lv_equal type abap_bool.
+    field-symbols <la> like line of is_input-local.
+    field-symbols <le> like line of is_input-local.
+
+    loop at is_input-local assigning <la>.
+      read table is_exp-local with key file-filename = <la>-file-filename assigning <le>.
       cl_abap_unit_assert=>assert_subrc( ).
       cl_sxiveri_xml_comparator=>compare(
         exporting
@@ -301,13 +320,14 @@ class ltcl_stripper_scenarios implementation.
           xml2      = <le>-file-data
         importing
           are_equal = lv_equal ).
-      cl_abap_unit_assert=>assert_true( lv_equal ).
+      cl_abap_unit_assert=>assert_true( act = lv_equal msg = <la>-file-filename ).
     endloop.
 
-    field-symbols <ra> like line of ls_input-remote.
-    field-symbols <re> like line of ls_input-remote.
-    loop at ls_input-remote assigning <ra> where filename cp '*.xml'.
-      read table ls_exp-remote with key filename = <ra>-filename assigning <re>.
+    field-symbols <ra> like line of is_input-remote.
+    field-symbols <re> like line of is_input-remote.
+
+    loop at is_input-remote assigning <ra> where filename cp '*.xml'.
+      read table is_exp-remote with key filename = <ra>-filename assigning <re>.
       cl_abap_unit_assert=>assert_subrc( ).
       cl_sxiveri_xml_comparator=>compare(
         exporting
@@ -317,6 +337,35 @@ class ltcl_stripper_scenarios implementation.
           are_equal = lv_equal ).
       cl_abap_unit_assert=>assert_true( act = lv_equal msg = <ra>-filename ).
     endloop.
+
+  endmethod.
+
+  method happy_path_with_derect_config.
+
+    data ls_exp   type ty_local_remote.
+    data ls_input type ty_local_remote.
+
+    prepare_mock(
+      importing
+        es_input = ls_input
+        es_exp   = ls_exp ).
+
+    delete ls_input-remote where filename = '.xmlstrip.config'.
+
+    zcl_abapgit_xml_stripper=>process_files(
+      exporting
+        iv_config =
+          |remove DTEL:/dd04v/FLD1\n| &
+          |remove DTEL:/dd04v/FLD2\n| &
+          |remove DTEL(ZXXX):/dd04v/FLD3\n| &
+          |remove DOMA:/DD01V/xyz\n|
+      changing
+        ct_local  = ls_input-local
+        ct_remote = ls_input-remote ).
+
+    assert_result(
+      is_input = ls_input
+      is_exp   = ls_exp ).
 
   endmethod.
 
