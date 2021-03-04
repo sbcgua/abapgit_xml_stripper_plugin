@@ -112,6 +112,9 @@ class lcl_stripper implementation.
     mi_reader     = cl_sxml_string_reader=>create( iv_blob ).
     mo_xml_writer = cl_sxml_string_writer=>create( encoding = 'utf-8' ).
     mi_writer     = mo_xml_writer.
+    mi_writer->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
+    mi_writer->set_option( option = if_sxml_writer=>co_opt_indent ).
+    mi_writer->set_option( option = if_sxml_writer=>co_opt_normalizing ).
   endmethod.
 
   method render_blob.
