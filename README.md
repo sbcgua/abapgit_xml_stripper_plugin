@@ -46,3 +46,5 @@ remove DOMA:/DD01V/xyz
 
 So a config line can be for all object types or for the specific one. The node is removed both in local and remote files **before diff**. Importantly: the deserialization is not affected ! The original file without stripping is deserialized !
 
+[Sample repo](https://github.com/sbcgua/abapgit_xml_stripper_plugin_sample)
+
