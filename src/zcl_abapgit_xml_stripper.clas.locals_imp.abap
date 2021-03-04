@@ -73,6 +73,7 @@ class lcl_stripper definition final create private.
       importing
         iv_tag_name  type string
         iv_node_type type if_sxml_node=>node_type
+        iv_read_next type abap_bool default abap_true
       raising
         zcx_abapgit_exception cx_sxml_parse_error.
     methods do_remove
@@ -121,19 +122,26 @@ class lcl_stripper implementation.
 
     " Expect asx:abap XML structure
     validate_and_copy(
-      iv_tag_name = 'asx:abap'
+      iv_tag_name  = 'abapGit'
       iv_node_type = if_sxml_node=>co_nt_element_open ).
     validate_and_copy(
-      iv_tag_name = 'asx:values'
+      iv_tag_name  = 'asx:abap'
+      iv_node_type = if_sxml_node=>co_nt_element_open ).
+    validate_and_copy(
+      iv_tag_name  = 'asx:values'
       iv_node_type = if_sxml_node=>co_nt_element_open ).
 
     do_remove( ).
 
     validate_and_copy(
-      iv_tag_name = 'asx:values'
+      iv_read_next = abap_false " already read in do_remove
+      iv_tag_name  = 'asx:values'
       iv_node_type = if_sxml_node=>co_nt_element_close ).
     validate_and_copy(
-      iv_tag_name = 'asx:abap'
+      iv_tag_name  = 'asx:abap'
+      iv_node_type = if_sxml_node=>co_nt_element_close ).
+    validate_and_copy(
+      iv_tag_name  = 'abapGit'
       iv_node_type = if_sxml_node=>co_nt_element_close ).
 
     mi_reader->next_node( ).
@@ -155,7 +163,10 @@ class lcl_stripper implementation.
       clear lv_prefix.
     endif.
 
-    mi_reader->next_node( ).
+    if iv_read_next = abap_true.
+      mi_reader->next_node( ).
+    endif.
+
     if not ( mi_reader->node_type = iv_node_type and mi_reader->prefix = lv_prefix and mi_reader->name = lv_name ).
       if mi_reader->prefix is not initial.
         lv_real_tag_name = |{ mi_reader->prefix }:{ mi_reader->name }|.
@@ -166,13 +177,9 @@ class lcl_stripper implementation.
     endif.
 
     if mi_reader->node_type = if_sxml_node=>co_nt_element_open.
-      if lv_prefix is not initial.
-        lcl_utils=>open_cur_node_copy_with_attrs(
-          ii_reader = mi_reader
-          ii_writer = mi_writer ).
-      else.
-        mi_writer->open_element( name = mi_reader->name ).
-      endif.
+      lcl_utils=>open_cur_node_copy_with_attrs(
+        ii_reader = mi_reader
+        ii_writer = mi_writer ).
     elseif mi_reader->node_type = if_sxml_node=>co_nt_element_close.
       mi_writer->close_element( ).
     else.
@@ -210,6 +217,11 @@ class lcl_stripper implementation.
           endif.
 
         when if_sxml_node=>co_nt_element_close.
+          lv_elem_depth = lv_elem_depth - 1.
+          if lv_elem_depth < 0. " wrapping tag closes
+            exit.
+          endif.
+
           read table lt_stack index 1 into lv_stack_top.
           assert sy-subrc = 0.
 
@@ -223,7 +235,6 @@ class lcl_stripper implementation.
 
           delete lt_stack index 1.
           lv_cur_path = to_upper( lcl_utils=>join_path( lt_stack ) ).
-          lv_elem_depth = lv_elem_depth - 1.
 
           if lv_start_skip_at > 0 and lv_elem_depth < lv_start_skip_at.
             lv_start_skip_at = 0.
@@ -239,9 +250,6 @@ class lcl_stripper implementation.
           zcx_abapgit_exception=>raise( 'Unexpected node type' ).
       endcase.
 
-      if lv_elem_depth = 0. " end of stack reached
-        exit.
-      endif.
     enddo.
 
   endmethod.

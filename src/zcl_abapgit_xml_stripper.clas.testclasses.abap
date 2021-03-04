@@ -18,29 +18,33 @@ class ltcl_stripper_components_test implementation.
     lt_paths = value #( ( `/DATA/STARTING_FOLDER` ) ( `/DATA/IGNORE` ) ).
 
     data(lv_input) = |<?xml version="1.0" encoding="utf-8"?>\n| &
-      |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-      | <asx:values>\n| &
-      |  <DATA>\n| &
-      |   <MASTER_LANGUAGE>E</MASTER_LANGUAGE>\n| &
-      |   <STARTING_FOLDER>/src/</STARTING_FOLDER>\n| &
-      |   <FOLDER_LOGIC>PREFIX</FOLDER_LOGIC>\n| &
-      |   <IGNORE>\n| &
-      |    <item>/.travis.yml</item>\n| &
-      |    <item>/CONTRIBUTING.md</item>\n| &
-      |   </IGNORE>\n| &
-      |  </DATA>\n| &
-      | </asx:values>\n| &
-      |</asx:abap>\n|.
+      |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+      | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+      |  <asx:values>\n| &
+      |   <DATA>\n| &
+      |    <MASTER_LANGUAGE>E</MASTER_LANGUAGE>\n| &
+      |    <STARTING_FOLDER>/src/</STARTING_FOLDER>\n| &
+      |    <FOLDER_LOGIC>PREFIX</FOLDER_LOGIC>\n| &
+      |    <IGNORE>\n| &
+      |     <item>/.travis.yml</item>\n| &
+      |     <item>/CONTRIBUTING.md</item>\n| &
+      |    </IGNORE>\n| &
+      |   </DATA>\n| &
+      |  </asx:values>\n| &
+      | </asx:abap>\n| &
+      |</abapGit>|.
 
     data(lv_exp) = |<?xml version="1.0" encoding="utf-8"?>\n| &
-      |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-      | <asx:values>\n| &
-      |  <DATA>\n| &
-      |   <MASTER_LANGUAGE>E</MASTER_LANGUAGE>\n| &
-      |   <FOLDER_LOGIC>PREFIX</FOLDER_LOGIC>\n| &
-      |  </DATA>\n| &
-      | </asx:values>\n| &
-      |</asx:abap>|.
+      |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+      | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+      |  <asx:values>\n| &
+      |   <DATA>\n| &
+      |    <MASTER_LANGUAGE>E</MASTER_LANGUAGE>\n| &
+      |    <FOLDER_LOGIC>PREFIX</FOLDER_LOGIC>\n| &
+      |   </DATA>\n| &
+      |  </asx:values>\n| &
+      | </asx:abap>| &
+      |</abapGit>|.
 
     data(lv_blob_input) = cl_abap_codepage=>convert_to(
       source   = lv_input
@@ -115,12 +119,12 @@ class ltcl_stripper_scenarios definition final for testing
 
     methods prepare_mock
       exporting
-        es_input  type ty_local_remote
-        es_exp    type ty_local_remote.
+        es_input type ty_local_remote
+        es_exp   type ty_local_remote.
     methods assert_result
       importing
-        is_input  type ty_local_remote
-        is_exp    type ty_local_remote.
+        is_input type ty_local_remote
+        is_exp   type ty_local_remote.
 
 endclass.
 
@@ -130,16 +134,18 @@ class ltcl_stripper_scenarios implementation.
     es_input = value #(
       local = value #(
         ( file = value #( path = `` filename = `zyyy.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>y</USEFULL>\n| &
-          |   <fld1>1</fld1>\n| &
-          |   <fld2>2</fld2>\n| &
-          |   <fld3>3</fld3>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>y</USEFULL>\n| &
+          |    <fld1>1</fld1>\n| &
+          |    <fld2>2</fld2>\n| &
+          |    <fld3>3</fld3>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
           item = value #( obj_type = 'DTEL' obj_name = 'ZYYY' devclass = 'ZTMP' )
         )
       )
@@ -150,44 +156,55 @@ class ltcl_stripper_scenarios implementation.
           |remove DTEL(ZXXX):/dd04v/FLD3\n| &
           |remove DOMA:/DD01V/xyz\n| ) )
         ( path = `` filename = `zxxx.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>x</USEFULL>\n| &
-          |   <fld1>1</fld1>\n| &
-          |   <fld2>2</fld2>\n| &
-          |   <fld3>3</fld3>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>x</USEFULL>\n| &
+          |    <fld1>1</fld1>\n| &
+          |    <fld2>2</fld2>\n| &
+          |    <fld3>3</fld3>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zyyy.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>y</USEFULL>\n| &
-          |   <fld1>1</fld1>\n| &
-          |   <fld2>2</fld2>\n| &
-          |   <fld3>3</fld3>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>y</USEFULL>\n| &
+          |    <fld1>1</fld1>\n| &
+          |    <fld2>2</fld2>\n| &
+          |    <fld3>3</fld3>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma.doma.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD01V>\n| &
-          |   <USEFULL>doma</USEFULL>\n| &
-          |   <xyz>xyz</xyz>\n| &
-          |  </DD01V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD01V>\n| &
+          |    <USEFULL>doma</USEFULL>\n| &
+          |    <xyz>xyz</xyz>\n| &
+          |   </DD01V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma2.doma.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD01V>\n| &
-          |   <USEFULL>doma2</USEFULL>\n| &
-          |  </DD01V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD01V>\n| &
+          |    <USEFULL>doma2</USEFULL>\n| &
+          |   </DD01V>\n| &
+          |   <LONGTEXTS>\n| &
+          |    <MORE>more</MORE>\n| &
+          |   </LONGTEXTS>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma3.doma.extra.xml` data = cl_abap_codepage=>convert_to( source =
           |<SOMEDATA>\n| &
           | <USEFULL>doma3</USEFULL>\n| &
@@ -198,14 +215,16 @@ class ltcl_stripper_scenarios implementation.
     es_exp = value #(
       local = value #(
         ( file = value #( path = `` filename = `zyyy.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>y</USEFULL>\n| &
-          |   <fld3>3</fld3>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>y</USEFULL>\n| &
+          |    <fld3>3</fld3>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
           item = value #( obj_type = 'DTEL' obj_name = 'ZYYY' devclass = 'ZTMP' )
         )
       )
@@ -216,38 +235,49 @@ class ltcl_stripper_scenarios implementation.
           |remove DTEL(ZXXX):/dd04v/FLD3\n| &
           |remove DOMA:/DD01V/xyz\n| ) )
         ( path = `` filename = `zxxx.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>x</USEFULL>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>x</USEFULL>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zyyy.dtel.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD04V>\n| &
-          |   <USEFULL>y</USEFULL>\n| &
-          |   <fld3>3</fld3>\n| &
-          |  </DD04V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD04V>\n| &
+          |    <USEFULL>y</USEFULL>\n| &
+          |    <fld3>3</fld3>\n| &
+          |   </DD04V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma.doma.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD01V>\n| &
-          |   <USEFULL>doma</USEFULL>\n| &
-          |  </DD01V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD01V>\n| &
+          |    <USEFULL>doma</USEFULL>\n| &
+          |   </DD01V>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma2.doma.xml` data = cl_abap_codepage=>convert_to( source =
-          |<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
-          | <asx:values>\n| &
-          |  <DD01V>\n| &
-          |   <USEFULL>doma2</USEFULL>\n| &
-          |  </DD01V>\n| &
-          | </asx:values>\n| &
-          |</asx:abap>\n| ) )
+          |<abapGit version="v1.0.0" serializer="LCL_OBJECT_DTEL" serializer_version="v1.0.0">| &
+          | <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">\n| &
+          |  <asx:values>\n| &
+          |   <DD01V>\n| &
+          |    <USEFULL>doma2</USEFULL>\n| &
+          |   </DD01V>\n| &
+          |   <LONGTEXTS>\n| &
+          |    <MORE>more</MORE>\n| &
+          |   </LONGTEXTS>\n| &
+          |  </asx:values>\n| &
+          | </asx:abap>\n| &
+          |</abapGit>| ) )
         ( path = `` filename = `zdoma3.doma.extra.xml` data = cl_abap_codepage=>convert_to( source =
           |<SOMEDATA>\n| &
           | <USEFULL>doma3</USEFULL>\n| &
