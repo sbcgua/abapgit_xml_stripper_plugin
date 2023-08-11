@@ -36,7 +36,7 @@ class zcl_abapgit_xml_stripper definition
         iv_config type string optional
       changing
         ct_local  type zif_abapgit_definitions=>ty_files_item_tt
-        ct_remote type zif_abapgit_definitions=>ty_files_tt
+        ct_remote type zif_abapgit_git_definitions=>ty_files_tt
       raising
         zcx_abapgit_exception.
 
@@ -53,7 +53,7 @@ class zcl_abapgit_xml_stripper definition
 
     class-methods find_strip_config
       importing
-        it_remote           type zif_abapgit_definitions=>ty_files_tt
+        it_remote           type zif_abapgit_git_definitions=>ty_files_tt
         iv_config_file_name type string optional
       returning
         value(rv_config_blob) type xstring.
@@ -67,7 +67,7 @@ class zcl_abapgit_xml_stripper definition
     methods _process_files
       changing
         ct_local  type zif_abapgit_definitions=>ty_files_item_tt
-        ct_remote type zif_abapgit_definitions=>ty_files_tt
+        ct_remote type zif_abapgit_git_definitions=>ty_files_tt
       raising
         zcx_abapgit_exception.
 

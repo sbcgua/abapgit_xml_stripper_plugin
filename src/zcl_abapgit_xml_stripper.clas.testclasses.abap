@@ -108,7 +108,7 @@ class ltcl_stripper_scenarios definition final for testing
     types:
       begin of ty_local_remote,
         local  type zif_abapgit_definitions=>ty_files_item_tt,
-        remote type zif_abapgit_definitions=>ty_files_tt,
+        remote type zif_abapgit_git_definitions=>ty_files_tt,
       end of ty_local_remote.
 
 
